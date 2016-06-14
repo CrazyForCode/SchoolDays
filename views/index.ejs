@@ -1,0 +1,26 @@
+<!DOCTYPE>
+<html>
+	<head>
+		<% include ./partials/head %>
+		<script src="/js/Chart.min.js"></script>
+		<script src="/js/jquery.cookie-1.4.1.min.js"></script>
+		<link rel="stylesheet" href="/css/login.css">
+	</head>
+	<body>
+		<div id="login-panel">
+			<% include ./login %>
+	     	<div class="footer">
+				<% include ./partials/footer %>
+			</div>
+		</div>
+
+     	<div id="spidering">
+     		<div class="ui active text loader">正在获取数据...</div>
+     	</div>
+
+		<div id="content"></div>
+		
+	</body>
+	
+	<script src="js/login.js"></script>
+</html>

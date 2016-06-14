@@ -1,0 +1,53 @@
+<div class="ui stackable grid">
+	<div class="five wide column"></div>
+	<div class="six wide column">
+	    <h1 id="login-title">School Days</h1>
+	    <div class="ui segment">
+	        <div class="ui form" id="login-form">
+	        	<div class="field required">
+	        	<!-- <label>学校</label> -->
+	                <select class="ui search dropdown" id="school">
+					  	<option value="">大学</option>
+					  	<% schools.forEach(function(school) { %>
+							<option value="<%= school.code %>"><%= school.name %></option>
+		        		<% }); %>
+	                </select>
+	          	</div>
+	          	<div class="field required">
+	                <!-- <label>学号</label> -->
+	                <input type="text" name="username" id="username" placeholder="学号">
+	          	</div>
+	            <div class="field required">
+	                <!-- <label>密码</label> -->
+	                <input type="password" name="password" id="password" placeholder="密码">
+	            </div>
+	            <div class="field">
+	            	<!-- <label>验证码</label> -->
+	            	<div class="field inline">
+	            		<input type="text" name="check-code" id="check-code" placeholder="验证码">
+	            		<img class="ui tiny image inline" id="check-code-image" src="" onclick="getCheckCode()">
+	            	</div>
+	            </div>
+	            <div class="field inline">
+					<button class="ui submit button" type="submit" onclick="login()">登录</button>
+					<div class="ui checkbox">
+						<input type="checkbox" tabindex="0" class="">
+					  	<label>记住我</label>
+					</div>
+	        	</div>
+	        </div>
+	    </div>
+		<div class="ui styled accordion">
+			<% explainations.forEach(function(explain) { %>
+				<div class="title">
+					    <i class="dropdown icon"></i>
+					    <%= explain.title %>
+				  	</div>
+				  	<div class="content">
+				    	<p class="transition hidden"><%= explain.description %></p>
+				  	</div>
+			<% }); %>
+		</div>
+	</div>
+	<div class="five wide column"></div>
+</div>
