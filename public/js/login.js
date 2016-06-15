@@ -78,6 +78,5 @@ function login() {
 function getCheckCode() {
 	var cookie = $.cookie('token');
 	$('#check-code-image').attr('src', 'http://jwxt.i.cqut.edu.cn/' + cookie + '/CheckCode.aspx?time=' + new Date().getTime());
-	console.log(cookie);
 }
 getCheckCode();

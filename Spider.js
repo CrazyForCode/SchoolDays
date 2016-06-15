@@ -4,8 +4,6 @@ var url = require('url');
 var iconv = require('iconv-lite');
 var readlineSync = require('readline-sync');
 var BufferHelper = require('bufferhelper');
-var fs = require('fs');
-
 
 var entryHost = 'jwxt.i.cqut.edu.cn';
 var entryUrl = 'http://' + entryHost;
@@ -39,7 +37,6 @@ Spider.prototype.login = function(checkCode, viewState, callback) {
             txtUserName: this.username,
             TextBox2: this.password,
             txtSecretCode: this.checkCode,
-            RadioButtonList1: "%D1%A7%C9%FA",
             Button1: "",
             lbLanguage: "",
             hidPdrs: "",
@@ -47,7 +44,6 @@ Spider.prototype.login = function(checkCode, viewState, callback) {
         },
         followAllRedirects: true
     }, function(err, res, body) {
-        console.log(res.statusCode);
         if (err) {
             callback(err);
         } else if (res.statusCode == 200) {
@@ -63,8 +59,8 @@ Spider.prototype.login = function(checkCode, viewState, callback) {
 
 
 // 获取课程成绩
-Spider.prototype.getCollegeExaminationScores = function(year, term, callback) {
-    console.log('getCollegeExaminationScores');
+Spider.prototype.getLessonsScores = function(year, term, callback) {
+    console.log('getLessonsScores');
 
     var queryUrl = url.format({
         "protocol": "http",
@@ -137,13 +133,12 @@ Spider.prototype.getCollegeExaminationScores = function(year, term, callback) {
                 results.tbody.push(data);
             }
         });
-        console.log(results);
         return results;
     }
 }
 
 // 获取等级考试成绩
-Spider.prototype.getRankExaminationScores = function(callback) {
+Spider.prototype.getRankScores = function(callback) {
     var scoresUrl = url.format({
         "protocol": "http",
         "host": entryHost,
@@ -172,7 +167,7 @@ Spider.prototype.getRankExaminationScores = function(callback) {
         var $ = cheerio.load(resolveGB2312Html(body));
         var results = getScoresData($);
         callback({
-            title: '等级考试程序查询',
+            title: '等级考试成绩查询',
             type: "table",
             data: results
         });
@@ -199,8 +194,110 @@ Spider.prototype.getRankExaminationScores = function(callback) {
     }
 }
 
-Spider.prototype.getUnfinishedLessions = function() {
+Spider.prototype.getStatistics = function(callback) {
+    console.log('getStatistics');
+    var results = {
+        unfinishedLessionsScores: {},
+        creditStatistics: {}
+    }
 
+    var queryUrl = url.format({
+        "protocol": "http",
+        "host": entryHost,
+        "pathname": this.cookie + "/xscjcx.aspx",
+        "query": {
+            "xh": this.username,
+            "gnmkdm": "N121604"
+        }
+    });
+    request({
+        url: queryUrl,
+        encoding: null,
+        headers: {
+            Referer: url.format({
+                "protocol": "http",
+                "host": entryHost,
+                "pathname": this.cookie + "/xs_main.aspx",
+                "query": {
+                    "xh": this.username,
+                    "type": 1
+                }
+            })
+        }
+    },function(err, res, body){
+        if (err) { return console.error(err) };
+        var $ = cheerio.load(resolveGB2312Html(body));
+        var viewState = $('input[name=__VIEWSTATE]').attr('value');
+        results.unfinishedLessionsScores = {
+            title: '至今仍未完成的课程',
+            type: "table",
+            data: getUnfinishedLessionsScoresData($)
+        }
+        request.post({
+            url: queryUrl,
+            encoding: null,
+            headers: {
+                Referer: queryUrl
+            },
+            form: {
+                __EVENTTARGET: '',
+                __EVENTARGUMENT: '',
+                __VIEWSTATE: viewState,
+                hidLanguage: '',
+                Button1: '%B3%C9%BC%A8%CD%B3%BC%C6',
+                ddlxn: '',
+                ddlxq: '',
+                btnCx: '',
+            }
+        } , function(err, res, body){
+            if(err) { return console.error(err) }
+            var $ = cheerio.load(resolveGB2312Html(body));
+            results.creditStatistics = getTotalCreditStatistics($);
+            callback(results);
+        });
+    });
+
+    function getUnfinishedLessionsScoresData($) {
+        var results = { thead: [], tbody: [] };
+        $('table[class=datelist] tr').each(function(i, ele) {
+            var $ele = cheerio.load(ele);
+            var data = [$ele('td').eq(1).text(), //课程名称
+                $ele('td').eq(3).text(), //学分
+                $ele('td').eq(4).text(), //最高成绩
+            ];
+            if (i == 0) {
+                results.thead = data;
+            } else {
+                results.tbody.push(data);
+            }
+        });
+        return results;
+    }
+    function getTotalCreditStatistics($) {
+        var results = {
+            title: '学分统计',
+            total: '',
+            data: { thead: [], tbody: [] },
+
+        }
+        results.total = $('#xftj b').html();
+
+        $('#Datagrid2 tr').each(function(i, ele) {
+            var $ele = cheerio.load(ele);
+            var data = [$ele('td').eq(0).text(), //课程性质
+                $ele('td').eq(1).text(), //学分要求
+                $ele('td').eq(2).text(), //获取学分
+                $ele('td').eq(3).text(), //未通过学分
+                $ele('td').eq(4).text(), //还需学分
+            ];
+            if (i == 0) {
+                results.data.thead = data;
+            } else {
+                results.data.tbody.push(data);
+            }
+        });
+        return results;
+    }
 }
 
 /**

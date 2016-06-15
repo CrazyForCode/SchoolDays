@@ -1,0 +1,84 @@
+<h3><%= scores.finished.title %></h3>
+<table class="ui celled striped green table" id="finished-scores">
+    <thead>
+        <tr>
+            <% scores.finished.data.thead.forEach(function(column) { %>
+                <td><%= column %></td>
+            <% }); %>
+        </tr>
+    </thead>
+    <tbody>
+        <% scores.finished.data.tbody.forEach(function(row) { %>
+            <tr>
+            <% row.forEach(function(column, index) { %>
+                <% if (index == row.length-1 && column < 60) { %> 
+                <td class="negative">
+                <% } else if (index == row.length-1 && column >= 85 ) {%>
+                <td class="positive">
+                <% } else { %>
+                    <td>
+                <% } %>
+                <%= column %></td>
+            <% }); %>
+            </tr>
+        <% });%>
+    </tbody>
+</table>
+
+
+
+<h3><%= scores.rank.title %></h3>
+<table class="ui celled striped yellow table" id="rank-scores">
+    <thead>
+        <tr>
+            <% scores.rank.data.thead.forEach(function(column) { %>
+                <td><%= column %></td>
+            <% });%>
+        </tr>
+    </thead>
+    <tbody>
+        <% scores.rank.data.tbody.forEach(function(row) { %>
+            <tr>
+            <% row.forEach(function(column, index) { %>
+                <% if ((row[2] == '英语四级' || row[2] == '英语六级') && index == row.length-1) {  %>
+                   <% if (column < 425) { %> 
+                        <td class="negative">
+                    <% } else { %>
+                        <td class="positive">
+                    <% }  %>
+                <% } else { %>
+                    <td>
+                <% } %>
+                <%= column %></td>
+            <% }); %>
+            </tr>
+        <% });%>
+    </tbody>
+</table>
+
+<h3><%= scores.unfinished.title %></h3>
+<table class="ui celled striped red table" id="unfinished-scores">
+    <thead>
+        <tr>
+            <% scores.unfinished.data.thead.forEach(function(column) { %>
+                <td><%= column %></td>
+            <% });%>
+        </tr>
+    </thead>
+    <tbody>
+        <% scores.unfinished.data.tbody.forEach(function(row) { %>
+            <tr>
+            <% row.forEach(function(column, index) { %>
+                <% if (index == row.length-1 && column < 60) { %> 
+                <td class="negative">
+                <% } else if (index == row.length-1 && column >= 85 ) {%>
+                <td class="positive">
+                <% } else { %>
+                    <td>
+                <% } %>
+                <%= column %></td>
+            <% }); %>
+            </tr>
+        <% });%>
+    </tbody>
+</table>

@@ -1,0 +1,19 @@
+<h3><%= credit.title %></h3>
+<table class="ui celled striped blue table" id="credit">
+    <thead>
+        <tr>
+            <% credit.data.thead.forEach(function(column) { %>
+                <td><%= column %></td>
+            <% }); %>
+        </tr>
+    </thead>
+    <tbody>
+        <% credit.data.tbody.forEach(function(row) { %>
+            <tr>
+            <% row.forEach(function(column, index) { %>
+                <td><%= column %></td>
+            <% }); %>
+            </tr>
+        <% });%>
+    </tbody>
+</table>
