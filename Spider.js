@@ -1,5 +1,5 @@
 var cheerio = require('cheerio');
-var request = require('request').defaults({jar: true});
+var request = require('request');
 var url = require('url');
 var iconv = require('iconv-lite');
 var readlineSync = require('readline-sync');
@@ -25,6 +25,11 @@ Spider.getCookies = function(callback) {
             viewState: viewState
         });
     });
+}
+
+Spider.getCheckCode = function(cookie, res) {
+    var link = entryUrl + '/' + cookie +'/CheckCode.aspx';
+    request(link).pipe(res);
 }
 
 // 登录
@@ -370,8 +375,8 @@ scriptSessionId=" + dwrId + "/" + "6Q5poll-*0cRtF8ka\n\
                 function fmt(a) {return a < 10 ? '0' + a : a}
                 var final = result.map(function(exam) {
                     exam.time = exam.startTime.getFullYear() + '-'
-                    + fmt(exam.startTime.getMonth()) + '-'
-                    + fmt(exam.startTime.getDay()) +' (' + fmt(exam.startTime.getHours()) + ':' + fmt(exam.startTime.getMinutes()) + ' - '
+                    + fmt(exam.startTime.getMonth()+1) + '-'
+                    + fmt(exam.startTime.getDate()) +' (' + fmt(exam.startTime.getHours()) + ':' + fmt(exam.startTime.getMinutes()) + ' - '
                     + fmt(exam.stopTime.getHours()) + ':' + fmt(exam.stopTime.getMinutes()) + ')'
                     return exam;
                 });

@@ -37,16 +37,16 @@ loginForm.form({
 function login() {
 	if (loginForm.form('is valid')) {
 		loginForm.addClass("loading");
-		var scl = $('#school').val()
-		var usr = $('#username').val()
-		var pwd = $('#password').val()
-		var code = $('#check-code').val()
+		var scl = $('#school')
+		var usr = $('#username')
+		var pwd = $('#password')
+		var code = $('#check-code')
 
 		$.post("/login", {
-			school: scl,
-			username: usr,
-			password: pwd,
-			checkCode: code
+			school: scl.val(),
+			username: usr.val(),
+			password: pwd.val(),
+			checkCode: code.val()
 		}, function(data, status) {
 			loginForm.removeClass("loading");
 			if (data.status == "success") {
@@ -54,6 +54,10 @@ function login() {
 				$('#login-panel').transition('fade down', {
 					onComplete: loading
 				});
+			} else {
+				code.val('');
+				getCheckCode();
+				loginForm.transition('shake');
 			}
 		})
 	}
@@ -77,6 +81,6 @@ function login() {
 
 function getCheckCode() {
 	var cookie = $.cookie('token');
-	$('#check-code-image').attr('src', 'http://jwxt.i.cqut.edu.cn/' + cookie + '/CheckCode.aspx?time=' + new Date().getTime());
+	$('#check-code-image').attr('src', '/checkCode?time=' + new Date().getTime());
 }
 getCheckCode();

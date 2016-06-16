@@ -43,6 +43,10 @@ router.post('/spider', function(req, res) {
 	});
 });
 
+router.get('/checkCode', function(req, res) {
+	Spider.getCheckCode(req.cookies.token, res);
+});
+
 /*=====  End of RESTful API  ======*/
 
 module.exports = router;
