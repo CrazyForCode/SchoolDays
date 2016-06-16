@@ -3,7 +3,6 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser')
 
 
-
 var app = express();
 config = require('./config.js');
 

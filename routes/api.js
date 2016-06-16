@@ -27,13 +27,16 @@ router.post('/spider', function(req, res) {
 	spider.getLessonsScores("", "", function(finishedLessonsScores) {
 		spider.getRankScores(function(rankScores) {
 			spider.getStatistics(function(data) {
-				res.render('content', {
-					scores: {
-						finished: finishedLessonsScores,
-						rank: rankScores,
-						unfinished: data.unfinishedLessionsScores
-					},
-					credit: data.creditStatistics
+				spider.getExaminationInfo(function (examInfo) {
+					res.render('content', {
+						scores: {
+							finished: finishedLessonsScores,
+							rank: rankScores,
+							unfinished: data.unfinishedLessionsScores
+						},
+						credit: data.creditStatistics,
+						examInfo: examInfo
+					});
 				});
 			});
 		});
