@@ -62,9 +62,12 @@ app.post('/spider', function(req, res) {
 	spider.username = req.cookies.username
 	spider.getCollegeExaminationScores("", "", function(examScores) {
 		spider.getRankExaminationScores(function(rankScores) {
-			res.render('content', {
-				examScores: examScores,
-				rankScores: rankScores
+			spider.getExaminationInfo(function(examInfo) {
+				res.render('content', {
+					examScores: examScores,
+					rankScores: rankScores,
+					examInfo  : examInfo
+				});
 			});
 		});
 	});

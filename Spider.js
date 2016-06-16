@@ -1,5 +1,5 @@
 var cheerio = require('cheerio');
-var request = require('request');
+var request = require('request').defaults({jar: true});
 var url = require('url');
 var iconv = require('iconv-lite');
 var readlineSync = require('readline-sync');
@@ -197,6 +197,79 @@ Spider.prototype.getRankExaminationScores = function(callback) {
         });
         return results;
     }
+}
+
+Spider.prototype.getExaminationInfo = function(callback) {
+    request({
+        url: 'http://kw.cqut.edu.cn/',
+    }, function(err, res, body) {
+        var dwrId;
+        var window = { dwr : { _ : [{ handleCallback: function(a1, a2, a3) { dwrId = a3; } }] } };
+        var formData = 'callCount=1\n\
+c0-scriptName=__System\n\
+c0-methodName=generateId\n\
+c0-id=0\nbatchId=0\n\
+instanceId=0\n\
+page=%2Flogin.jsp\n\
+scriptSessionId=\n\
+windowName=\n';
+  // console.log(formData)
+        request.post({
+            url: 'http://kw.cqut.edu.cn/dwr/call/plaincall/__System.generateId.dwr',
+            form: formData
+        }, function(err, res, body) {
+            eval(body);
+            // console.log(jar.getCookieString('http://kw.cqut.edu.cn'));
+            // console.log(jar.getCookieString('http://kw.cqut.edu.cn').match(/^.*$/));
+            // console.log(dwrId);
+            var formData = "callCount=1\n\
+windowName=c0-param0\n\
+c0-scriptName=MyService\n\
+c0-methodName=findMapByStudentExamQuery\n\
+c0-id=0\n\
+c0-e1=string:examStuDetaileID\n\
+c0-e2=string:KCMC\n\
+c0-e3=string:courseName\n\
+c0-e4=string:startTime\n\
+c0-e5=string:stopTime\n\
+c0-e6=string:examClassRoomID\n\
+c0-e7=string:examClassRoomNum\n\
+c0-e8=string:LH\n\
+c0-e9=string:semesterID\n\
+c0-e10=string:XH\n\
+c0-e11=string:XM\n\
+c0-e12=string:campusCode\n\
+c0-param0=array:[reference:c0-e1,reference:c0-e2,reference:c0-e3,reference:c0-e4,reference:c0-e5,reference:c0-e6,reference:c0-e7,reference:c0-e8,reference:c0-e9,reference:c0-e10,reference:c0-e11,reference:c0-e12]\n\
+c0-param1=string:semesterID%3D'20150827161917445'%20and%20xh%3D'" + "11403080338" + "'%20and%20isPublish%3D1\n\
+c0-param2=boolean:false\n\
+c0-param3=string:startTime\n\
+c0-param4=string:asc\n\
+batchId=2\n\
+instanceId=0\n\
+page=%2FstudentExamQueryQuickManager.jsp%3FstudentOrTeacherID%3D11403080338\n\
+scriptSessionId=" + dwrId + "/" + "6Q5poll-*0cRtF8ka\n\
+";
+            request({
+                method: 'POST',
+                url: 'http://kw.cqut.edu.cn/dwr/call/plaincall/MyService.findMapByStudentExamQuery.dwr',
+                form: formData
+            }, function(err, res, body) {
+                var result;
+                window.dwr._[0].handleCallback = function(a1, a2, a3) { result = a3; }
+                eval(body);
+                function fmt(a) {return a < 10 ? '0' + a : a}
+                var final = result.map(function(exam) {
+                    exam.time = exam.startTime.getFullYear() + '-'
+                    + fmt(exam.startTime.getMonth()) + '-'
+                    + fmt(exam.startTime.getDay()) +' (' + fmt(exam.startTime.getHours()) + ':' + fmt(exam.startTime.getMinutes()) + ' - '
+                    + fmt(exam.stopTime.getHours()) + ':' + fmt(exam.stopTime.getMinutes()) + ')'
+                    return exam;
+                });
+                console.log(final);
+                callback(final);
+            });
+        });
+    });
 }
 
 Spider.prototype.getUnfinishedLessions = function() {

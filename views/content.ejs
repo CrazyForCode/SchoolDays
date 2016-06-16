@@ -100,6 +100,38 @@
 		</div>
 	<div class="three wide column"></div>
 </div>
+
+<div class="ui grid">
+	<div class="three wide column"></div>
+	<div class="ten wide column">
+		  	<h3>考试信息</h3>
+			<table class="ui celled striped red table" id="rank-scores">
+			<thead>
+				<tr>
+					<td>课程</td>
+					<td>时间</td>
+					<td>校区</td>
+					<td>考场</td>
+					<td>地点</td>
+				</tr>
+			</thead>
+			<tbody>
+				<% examInfo.forEach(function(row) { %>
+					<tr>
+						<td><%= row.KCMC %></td>
+						<td><%= row.time %></td>
+						<td><%= row.campusCode == '3' ? '花溪校区' : '两江校区' %></td>
+						<td><%= row.examClassRoomNum %></td>
+						<td><%= row.jsmc %></td>
+					</tr>
+				<% });%>
+				</tbody>
+		</table>
+		</div>
+	<div class="three wide column"></div>
+</div>
+
+
 <!-- <div class="ui grid">
 	  <div class="three wide column"></div>
 	  <div class="ten wide column">
